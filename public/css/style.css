@@ -242,6 +242,8 @@ img,
   border: 3px solid var(--foreground);
   font-weight: bold;
   font-size: 0.875rem;
+  white-space: pre-line;
+  word-break: break-word;
   box-shadow: 4px 4px 0px 0px var(--foreground);
   animation: slideIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   background-color: var(--card);

@@ -644,8 +644,44 @@ document.getElementById("profileBtn")?.addEventListener("click", () => {
   profileManager.editProfile();
 });
 
-document.getElementById("settingsBtn")?.addEventListener("click", () => {
-  alert(
-    "Settings:\n\n1. Click your avatar to edit your profile\n2. Click the weather to change your city\n3. Click the sounds to toggle them on/off\n4. All your data is saved locally",
-  );
+function openInfoModal() {
+  const modal = document.getElementById("infoModal");
+  if (modal) {
+    modal.classList.add("active");
+    return;
+  }
+  if (typeof showNotification === "function") {
+    showNotification("Info panel not found.", "info");
+  }
+}
+
+// Capture-phase handler to override any older listeners (e.g., cached alert handlers)
+document.getElementById("settingsBtn")?.addEventListener(
+  "click",
+  (e) => {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    openInfoModal();
+  },
+  { capture: true },
+);
+
+function closeInfoModal() {
+  const modal = document.getElementById("infoModal");
+  if (modal) modal.classList.remove("active");
+}
+
+document
+  .getElementById("closeInfoModal")
+  ?.addEventListener("click", closeInfoModal);
+document
+  .getElementById("closeInfoModalFooter")
+  ?.addEventListener("click", closeInfoModal);
+
+document.getElementById("infoModal")?.addEventListener("click", (e) => {
+  if (e.target && e.target.id === "infoModal") closeInfoModal();
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeInfoModal();
 });

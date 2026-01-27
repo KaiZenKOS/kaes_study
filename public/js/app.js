@@ -34,6 +34,8 @@ let currentMode = "POMODORO";
 let timeRemaining = TIMER_MODES.POMODORO.duration;
 let timerInterval = null;
 let isRunning = false;
+let isSyncEnabled = false;
+let syncedEndTimeMs = null;
 let totalFocusTime = 0; // En secondes
 let pomodoroCount = 0; // Compteur de sessions Pomodoro
 
@@ -59,21 +61,79 @@ function updateDisplay() {
   timerDisplay.textContent = formatTime(timeRemaining);
 }
 
-// Démarrer/Arrêter le timer
-function toggleTimer() {
-  if (isRunning) {
-    // STOP
+function clearTimerInterval() {
+  if (timerInterval) {
     clearInterval(timerInterval);
-    isRunning = false;
-    startButton.innerHTML = `
+    timerInterval = null;
+  }
+}
+
+function setStartButtonRunning(running) {
+  startButton.innerHTML = running
+    ? `
+      <iconify-icon icon="solar:stop-bold" class="size-6"></iconify-icon>STOP
+    `
+    : `
       <iconify-icon icon="solar:play-bold" class="size-6"></iconify-icon>START
     `;
+}
+
+function startSyncedInterval() {
+  clearTimerInterval();
+  if (!syncedEndTimeMs) return;
+
+  timerInterval = setInterval(() => {
+    const remaining = Math.max(
+      0,
+      Math.ceil((syncedEndTimeMs - Date.now()) / 1000),
+    );
+    timeRemaining = remaining;
+    updateDisplay();
+
+    // Incrémenter le temps de focus seulement en mode POMODORO
+    if (isRunning && currentMode === "POMODORO" && remaining > 0) {
+      totalFocusTime++;
+      updateXP();
+      saveFocusTime();
+    }
+
+    if (remaining <= 0) {
+      clearTimerInterval();
+      isRunning = false;
+      syncedEndTimeMs = null;
+      setStartButtonRunning(false);
+      showNotification("Session complete!", "success");
+    }
+  }, 250);
+}
+
+// Démarrer/Arrêter le timer
+function toggleTimer() {
+  if (isSyncEnabled) {
+    if (isRunning) {
+      window.dispatchEvent(new CustomEvent("roomTimer:stop"));
+    } else {
+      window.dispatchEvent(
+        new CustomEvent("roomTimer:start", {
+          detail: {
+            mode: currentMode,
+            durationSec: TIMER_MODES[currentMode].duration,
+          },
+        }),
+      );
+    }
+    return;
+  }
+
+  if (isRunning) {
+    // STOP
+    clearTimerInterval();
+    isRunning = false;
+    setStartButtonRunning(false);
   } else {
     // START
     isRunning = true;
-    startButton.innerHTML = `
-      <iconify-icon icon="solar:stop-bold" class="size-6"></iconify-icon>STOP
-    `;
+    setStartButtonRunning(true);
 
     timerInterval = setInterval(() => {
       if (timeRemaining > 0) {
@@ -88,11 +148,9 @@ function toggleTimer() {
         }
       } else {
         // Timer terminé
-        clearInterval(timerInterval);
+        clearTimerInterval();
         isRunning = false;
-        startButton.innerHTML = `
-          <iconify-icon icon="solar:play-bold" class="size-6"></iconify-icon>START
-        `;
+        setStartButtonRunning(false);
 
         // Passer automatiquement au mode suivant
         autoSwitchMode();
@@ -106,25 +164,48 @@ function toggleTimer() {
 
 // Redémarrer le timer
 function restartTimer() {
-  clearInterval(timerInterval);
+  if (isSyncEnabled) {
+    window.dispatchEvent(
+      new CustomEvent("roomTimer:reset", {
+        detail: {
+          mode: currentMode,
+          durationSec: TIMER_MODES[currentMode].duration,
+        },
+      }),
+    );
+    return;
+  }
+
+  clearTimerInterval();
   isRunning = false;
   timeRemaining = TIMER_MODES[currentMode].duration;
   updateDisplay();
-  startButton.innerHTML = `
-    <iconify-icon icon="solar:play-bold" class="size-6"></iconify-icon>START
-  `;
+  setStartButtonRunning(false);
 }
 
 // Changer de mode
 function switchMode(mode) {
-  clearInterval(timerInterval);
+  if (isSyncEnabled) {
+    currentMode = mode;
+    updateModeButtons();
+    setStartButtonRunning(false);
+    window.dispatchEvent(
+      new CustomEvent("roomTimer:reset", {
+        detail: {
+          mode,
+          durationSec: TIMER_MODES[mode].duration,
+        },
+      }),
+    );
+    return;
+  }
+
+  clearTimerInterval();
   isRunning = false;
   currentMode = mode;
   timeRemaining = TIMER_MODES[mode].duration;
   updateDisplay();
-  startButton.innerHTML = `
-    <iconify-icon icon="solar:play-bold" class="size-6"></iconify-icon>START
-  `;
+  setStartButtonRunning(false);
 
   // Mettre à jour les boutons de mode
   updateModeButtons();
@@ -132,6 +213,11 @@ function switchMode(mode) {
 
 // Passer automatiquement au mode suivant selon le cycle
 function autoSwitchMode() {
+  if (isSyncEnabled) {
+    // In room mode we avoid local auto-switching to prevent desync.
+    return;
+  }
+
   if (currentMode === "POMODORO") {
     // Incrémenter le compteur après un Pomodoro
     pomodoroCount++;
@@ -165,6 +251,44 @@ function autoSwitchMode() {
     );
   }
 }
+
+// Room sync bridge (called by realtime.js)
+window.setTimerSyncEnabled = function (enabled) {
+  isSyncEnabled = !!enabled;
+
+  if (!isSyncEnabled) {
+    syncedEndTimeMs = null;
+    clearTimerInterval();
+  }
+};
+
+window.applyRoomTimerState = function (timer) {
+  if (!timer) return;
+
+  // Adopt server mode
+  if (timer.mode && TIMER_MODES[timer.mode]) {
+    currentMode = timer.mode;
+    updateModeButtons();
+  }
+
+  const duration =
+    Number(timer.durationSec) || TIMER_MODES[currentMode].duration;
+  TIMER_MODES[currentMode].duration = duration;
+
+  isRunning = !!timer.running;
+  setStartButtonRunning(isRunning);
+
+  if (isRunning && timer.endTimeMs) {
+    syncedEndTimeMs = Number(timer.endTimeMs);
+    startSyncedInterval();
+  } else {
+    syncedEndTimeMs = null;
+    clearTimerInterval();
+    const remaining = Number(timer.remainingSec);
+    timeRemaining = Number.isFinite(remaining) ? remaining : duration;
+    updateDisplay();
+  }
+};
 
 // Mettre à jour les boutons de mode actif
 function updateModeButtons() {
