@@ -36,6 +36,8 @@ let timerInterval = null;
 let isRunning = false;
 let isSyncEnabled = false;
 let syncedEndTimeMs = null;
+let isRoomHost = true;
+let lastSyncedFocusSecond = null;
 let totalFocusTime = 0; // En secondes
 let pomodoroCount = 0; // Compteur de sessions Pomodoro
 
@@ -82,6 +84,8 @@ function startSyncedInterval() {
   clearTimerInterval();
   if (!syncedEndTimeMs) return;
 
+  lastSyncedFocusSecond = Math.floor(Date.now() / 1000);
+
   timerInterval = setInterval(() => {
     const remaining = Math.max(
       0,
@@ -92,15 +96,22 @@ function startSyncedInterval() {
 
     // Incrémenter le temps de focus seulement en mode POMODORO
     if (isRunning && currentMode === "POMODORO" && remaining > 0) {
-      totalFocusTime++;
-      updateXP();
-      saveFocusTime();
+      const nowSec = Math.floor(Date.now() / 1000);
+      if (lastSyncedFocusSecond == null) lastSyncedFocusSecond = nowSec;
+      const delta = Math.max(0, nowSec - lastSyncedFocusSecond);
+      if (delta > 0) {
+        totalFocusTime += delta;
+        lastSyncedFocusSecond = nowSec;
+        updateXP();
+        saveFocusTime();
+      }
     }
 
     if (remaining <= 0) {
       clearTimerInterval();
       isRunning = false;
       syncedEndTimeMs = null;
+      lastSyncedFocusSecond = null;
       setStartButtonRunning(false);
       showNotification("Session complete!", "success");
     }
@@ -110,14 +121,22 @@ function startSyncedInterval() {
 // Démarrer/Arrêter le timer
 function toggleTimer() {
   if (isSyncEnabled) {
+    if (!isRoomHost) {
+      showNotification("Only the host can control the timer.", "info");
+      return;
+    }
+
     if (isRunning) {
       window.dispatchEvent(new CustomEvent("roomTimer:stop"));
     } else {
+      const fullDuration = TIMER_MODES[currentMode].duration;
+      const resume = timeRemaining > 0 && timeRemaining < fullDuration;
       window.dispatchEvent(
         new CustomEvent("roomTimer:start", {
           detail: {
             mode: currentMode,
             durationSec: TIMER_MODES[currentMode].duration,
+            resume,
           },
         }),
       );
@@ -165,6 +184,10 @@ function toggleTimer() {
 // Redémarrer le timer
 function restartTimer() {
   if (isSyncEnabled) {
+    if (!isRoomHost) {
+      showNotification("Only the host can control the timer.", "info");
+      return;
+    }
     window.dispatchEvent(
       new CustomEvent("roomTimer:reset", {
         detail: {
@@ -186,6 +209,10 @@ function restartTimer() {
 // Changer de mode
 function switchMode(mode) {
   if (isSyncEnabled) {
+    if (!isRoomHost) {
+      showNotification("Only the host can control the timer.", "info");
+      return;
+    }
     currentMode = mode;
     updateModeButtons();
     setStartButtonRunning(false);
@@ -259,6 +286,32 @@ window.setTimerSyncEnabled = function (enabled) {
   if (!isSyncEnabled) {
     syncedEndTimeMs = null;
     clearTimerInterval();
+  }
+};
+
+window.setRoomHost = function (isHost) {
+  isRoomHost = !!isHost;
+
+  if (!isSyncEnabled) return;
+
+  const disabled = !isRoomHost;
+  try {
+    startButton.disabled = disabled;
+    restartButton.disabled = disabled;
+    modeButtons.forEach((b) => (b.disabled = disabled));
+
+    const offClass = "opacity-60 cursor-not-allowed";
+    if (disabled) {
+      startButton.classList.add(...offClass.split(" "));
+      restartButton.classList.add(...offClass.split(" "));
+      modeButtons.forEach((b) => b.classList.add(...offClass.split(" ")));
+    } else {
+      startButton.classList.remove(...offClass.split(" "));
+      restartButton.classList.remove(...offClass.split(" "));
+      modeButtons.forEach((b) => b.classList.remove(...offClass.split(" ")));
+    }
+  } catch {
+    // ignore
   }
 };
 

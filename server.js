@@ -40,6 +40,7 @@ function getOrCreateRoom(roomId) {
     room = {
       // Keyed by stable clientId (localStorage) to avoid duplicate roster spam
       participants: new Map(),
+      hostClientId: null,
       timer: {
         running: false,
         mode: "POMODORO",
@@ -55,7 +56,11 @@ function getOrCreateRoom(roomId) {
 }
 
 function roomParticipantsPayload(room) {
-  return Array.from(room.participants.values());
+  return Array.from(room.participants.values()).map((p) => ({
+    id: p.id,
+    name: p.name,
+    avatar: p.avatar,
+  }));
 }
 
 function broadcastParticipants(roomId) {
@@ -63,8 +68,14 @@ function broadcastParticipants(roomId) {
   if (!room) return;
   io.to(roomId).emit("room:participants", {
     roomId,
+    hostClientId: room.hostClientId,
     participants: roomParticipantsPayload(room),
   });
+}
+
+function isHost(socket, room) {
+  const clientId = socket?.data?.clientId;
+  return !!clientId && room?.hostClientId === clientId;
 }
 
 function scheduleTimerEnd(roomId) {
@@ -97,8 +108,7 @@ function scheduleTimerEnd(roomId) {
 
 app.get("/api/room/new", (req, res) => {
   const roomId = generateRoomId();
-  // Optionally reserve it immediately
-  getOrCreateRoom(roomId);
+  // Do not reserve memory here (prevents room-creation abuse)
   res.json({ roomId });
 });
 
@@ -136,10 +146,16 @@ io.on("connection", (socket) => {
 
     room.participants.set(safeClientId, participant);
 
+    if (!room.hostClientId) {
+      room.hostClientId = safeClientId;
+    }
+
     // Send full room state to the joiner
     socket.emit("room:state", {
       roomId: safeRoomId,
       serverNowMs: Date.now(),
+      hostClientId: room.hostClientId,
+      youAreHost: room.hostClientId === safeClientId,
       participants: roomParticipantsPayload(room),
       timer: { ...room.timer },
     });
@@ -147,23 +163,50 @@ io.on("connection", (socket) => {
     broadcastParticipants(safeRoomId);
   });
 
-  socket.on("timer:start", ({ roomId, mode, durationSec }) => {
+  socket.on("timer:start", ({ roomId, mode, durationSec, resume }) => {
     if (!roomId) return;
 
     const safeRoomId = String(roomId).slice(0, 64);
     const room = getOrCreateRoom(safeRoomId);
 
-    const safeMode = (mode || "POMODORO").toString().slice(0, 20);
-    const safeDuration = Math.max(
+    if (!isHost(socket, room)) return;
+
+    if (room.timer.running && room.timer.endTimeMs) {
+      // Already running; ignore duplicate starts
+      return;
+    }
+
+    const requestedMode = (mode || "POMODORO").toString().slice(0, 20);
+    const requestedDuration = Math.max(
       1,
       Math.min(24 * 60 * 60, Number(durationSec) || 0),
     );
 
-    room.timer.mode = safeMode;
-    room.timer.durationSec = safeDuration;
+    const pausedState =
+      room.timer.running === false &&
+      room.timer.endTimeMs === null &&
+      Number.isFinite(Number(room.timer.remainingSec)) &&
+      Number(room.timer.remainingSec) > 0;
+
+    // Resume is default if we have paused state; otherwise start a fresh timer.
+    const shouldResume = !!resume || pausedState;
+
+    if (!shouldResume) {
+      room.timer.mode = requestedMode;
+      room.timer.durationSec = requestedDuration;
+      room.timer.remainingSec = requestedDuration;
+    }
+
+    // If remainingSec is 0 (or invalid), start fresh.
+    const remaining = Number(room.timer.remainingSec);
+    const startFromSec =
+      Number.isFinite(remaining) && remaining > 0
+        ? remaining
+        : room.timer.durationSec || requestedDuration;
+
     room.timer.running = true;
-    room.timer.endTimeMs = Date.now() + safeDuration * 1000;
-    room.timer.remainingSec = safeDuration;
+    room.timer.endTimeMs = Date.now() + startFromSec * 1000;
+    room.timer.remainingSec = startFromSec;
 
     io.to(safeRoomId).emit("timer:state", {
       roomId: safeRoomId,
@@ -179,6 +222,8 @@ io.on("connection", (socket) => {
 
     const safeRoomId = String(roomId).slice(0, 64);
     const room = getOrCreateRoom(safeRoomId);
+
+    if (!isHost(socket, room)) return;
 
     if (room.timerTimeout) {
       clearTimeout(room.timerTimeout);
@@ -207,6 +252,8 @@ io.on("connection", (socket) => {
 
     const safeRoomId = String(roomId).slice(0, 64);
     const room = getOrCreateRoom(safeRoomId);
+
+    if (!isHost(socket, room)) return;
 
     if (room.timerTimeout) {
       clearTimeout(room.timerTimeout);
@@ -248,6 +295,12 @@ io.on("connection", (socket) => {
     const existing = room.participants.get(clientId);
     if (existing?.socketId === socket.id) {
       room.participants.delete(clientId);
+
+      if (room.hostClientId === clientId) {
+        const nextHost = room.participants.keys().next().value || null;
+        room.hostClientId = nextHost;
+      }
+
       broadcastParticipants(roomId);
     }
 

@@ -79,20 +79,26 @@
       const displayName = (p?.name || "Guest").toString();
 
       item.className =
-        "relative group size-9 border-2 border-foreground bg-card shadow-[2px_2px_0px_0px_var(--color-border)] overflow-hidden flex items-center justify-center transition-transform hover:-translate-y-0.5";
+        "relative group size-9 border-2 border-foreground bg-card shadow-[2px_2px_0px_0px_var(--color-border)] flex items-center justify-center transition-transform hover:-translate-y-0.5";
+
+      const avatarBox = document.createElement("div");
+      avatarBox.className =
+        "w-full h-full overflow-hidden flex items-center justify-center";
 
       if (p.avatar) {
         const img = document.createElement("img");
         img.src = p.avatar;
         img.alt = displayName;
         img.className = "w-full h-full object-cover";
-        item.appendChild(img);
+        avatarBox.appendChild(img);
       } else {
         const span = document.createElement("span");
         span.className = "text-xs font-black";
         span.textContent = displayName.trim().slice(0, 1).toUpperCase();
-        item.appendChild(span);
+        avatarBox.appendChild(span);
       }
+
+      item.appendChild(avatarBox);
 
       // Tooltip (clean hover)
       const tooltip = document.createElement("div");
@@ -110,6 +116,12 @@
   function setSyncEnabled(enabled) {
     if (typeof window.setTimerSyncEnabled === "function") {
       window.setTimerSyncEnabled(!!enabled);
+    }
+  }
+
+  function setHostPermissions(youAreHost) {
+    if (typeof window.setRoomHost === "function") {
+      window.setRoomHost(!!youAreHost);
     }
   }
 
@@ -140,6 +152,11 @@
     socket.on("room:state", (payload) => {
       if (!payload) return;
       renderParticipants(payload.participants);
+      if (typeof payload.youAreHost !== "undefined") {
+        setHostPermissions(payload.youAreHost);
+      } else if (payload.hostClientId) {
+        setHostPermissions(payload.hostClientId === clientId);
+      }
       if (payload.timer && typeof window.applyRoomTimerState === "function") {
         window.applyRoomTimerState(payload.timer);
       }
@@ -148,6 +165,9 @@
     socket.on("room:participants", (payload) => {
       if (!payload) return;
       renderParticipants(payload.participants);
+      if (payload.hostClientId) {
+        setHostPermissions(payload.hostClientId === clientId);
+      }
     });
 
     socket.on("timer:state", (payload) => {
@@ -165,6 +185,7 @@
         roomId,
         mode: detail.mode,
         durationSec: detail.durationSec,
+        resume: !!detail.resume,
       });
     });
 
