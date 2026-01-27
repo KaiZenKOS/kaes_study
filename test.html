@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test - Pixel Focus</title>
+    <style>
+      body {
+        font-family: monospace;
+        padding: 20px;
+        background: #fdf6e3;
+        color: #5c5446;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 15px;
+        border: 2px solid #e17055;
+        background: white;
+      }
+      .success {
+        color: #00b894;
+      }
+      .warning {
+        color: #fdcb6e;
+      }
+      .error {
+        color: #d63031;
+      }
+      button {
+        padding: 10px 20px;
+        margin: 5px;
+        border: 2px solid #5c5446;
+        background: #ffeaa7;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      button:hover {
+        background: #e17055;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🧪 Tests de l'application Pixel Focus</h1>
+
+    <div class="test-section">
+      <h2>📦 1. LocalStorage</h2>
+      <button onclick="testLocalStorage()">Tester localStorage</button>
+      <p id="storage-result">Cliquez pour tester</p>
+    </div>
+
+    <div class="test-section">
+      <h2>🎵 2. Audio Support</h2>
+      <button onclick="testAudio()">Tester Audio API</button>
+      <p id="audio-result">Cliquez pour tester</p>
+    </div>
+
+    <div class="test-section">
+      <h2>🌐 3. Fetch API (pour météo & citations)</h2>
+      <button onclick="testFetch()">Tester Fetch</button>
+      <p id="fetch-result">Cliquez pour tester</p>
+    </div>
+
+    <div class="test-section">
+      <h2>⏰ 4. Timer / Intervals</h2>
+      <button onclick="testTimer()">Tester Timer</button>
+      <button onclick="stopTimer()">Stop</button>
+      <p id="timer-result">Cliquez pour tester</p>
+    </div>
+
+    <div class="test-section">
+      <h2>📱 5. Résolution d'écran</h2>
+      <p id="screen-info"></p>
+    </div>
+
+    <div class="test-section">
+      <h2>✅ Lancer l'application</h2>
+      <a
+        href="index.html"
+        style="
+          display: inline-block;
+          padding: 15px 30px;
+          background: #e17055;
+          color: white;
+          text-decoration: none;
+          font-weight: bold;
+          border: 4px solid #5c5446;
+        "
+      >
+        🚀 Ouvrir Pixel Focus
+      </a>
+    </div>
+
+    <script>
+      // Test localStorage
+      function testLocalStorage() {
+        const result = document.getElementById("storage-result");
+        try {
+          localStorage.setItem("test", "value");
+          const value = localStorage.getItem("test");
+          localStorage.removeItem("test");
+
+          if (value === "value") {
+            result.innerHTML =
+              '<span class="success">✅ localStorage fonctionne parfaitement !</span>';
+          } else {
+            result.innerHTML =
+              '<span class="error">❌ Problème avec localStorage</span>';
+          }
+        } catch (e) {
+          result.innerHTML = `<span class="error">❌ Erreur: ${e.message}</span>`;
+        }
+      }
+
+      // Test Audio
+      function testAudio() {
+        const result = document.getElementById("audio-result");
+        try {
+          const audio = new Audio();
+          if (audio.canPlayType) {
+            const mp3Support = audio.canPlayType("audio/mpeg") !== "";
+            const oggSupport = audio.canPlayType("audio/ogg") !== "";
+
+            result.innerHTML = `
+                        <span class="success">✅ Audio API disponible</span><br>
+                        MP3: ${mp3Support ? "✅" : "❌"} | 
+                        OGG: ${oggSupport ? "✅" : "❌"}
+                    `;
+          } else {
+            result.innerHTML =
+              '<span class="warning">⚠️ Audio API limitée</span>';
+          }
+        } catch (e) {
+          result.innerHTML = `<span class="error">❌ Erreur: ${e.message}</span>`;
+        }
+      }
+
+      // Test Fetch
+      async function testFetch() {
+        const result = document.getElementById("fetch-result");
+        result.innerHTML = '<span class="warning">⏳ Test en cours...</span>';
+
+        try {
+          const response = await fetch("https://zenquotes.io/api/random");
+          const data = await response.json();
+
+          if (data && data[0]) {
+            result.innerHTML = `
+                        <span class="success">✅ Fetch API fonctionne !</span><br>
+                        Citation test: "${data[0].q}"
+                    `;
+          } else {
+            result.innerHTML = '<span class="warning">⚠️ Réponse vide</span>';
+          }
+        } catch (e) {
+          result.innerHTML = `<span class="error">❌ Erreur réseau (normal si pas de connexion)</span>`;
+        }
+      }
+
+      // Test Timer
+      let testInterval = null;
+      let counter = 0;
+
+      function testTimer() {
+        const result = document.getElementById("timer-result");
+        counter = 0;
+
+        testInterval = setInterval(() => {
+          counter++;
+          result.innerHTML = `<span class="success">✅ Timer actif: ${counter} secondes</span>`;
+        }, 1000);
+      }
+
+      function stopTimer() {
+        if (testInterval) {
+          clearInterval(testInterval);
+          testInterval = null;
+          document.getElementById("timer-result").innerHTML +=
+            '<br><span class="warning">⏹️ Arrêté</span>';
+        }
+      }
+
+      // Afficher les infos d'écran
+      function displayScreenInfo() {
+        const info = document.getElementById("screen-info");
+        info.innerHTML = `
+                <strong>Largeur:</strong> ${window.innerWidth}px<br>
+                <strong>Hauteur:</strong> ${window.innerHeight}px<br>
+                <strong>Ratio pixel:</strong> ${window.devicePixelRatio}<br>
+                <strong>Type:</strong> ${window.innerWidth < 768 ? "📱 Mobile" : "💻 Desktop"}
+            `;
+      }
+
+      // Auto-exécution
+      displayScreenInfo();
+      window.addEventListener("resize", displayScreenInfo);
+
+      console.log("🧪 Page de test chargée");
+    </script>
+  </body>
+</html>

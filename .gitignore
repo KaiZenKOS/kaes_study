@@ -1,0 +1,56 @@
+# Fichiers système OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Éditeurs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Fichiers temporaires
+*.tmp
+*.log
+*.bak
+
+# Backups
+index.backup.html
+
+# Node (si jamais utilisé)
+node_modules/
+package-lock.json
+npm-debug.log
+
+# Fichiers audio personnels (ne pas commiter les gros fichiers)
+assets/sounds/*.mp3
+assets/sounds/*.ogg
+assets/sounds/*.wav
+# Mais garder le README
+!assets/sounds/README.md
+
+# Images personnelles
+assets/images/personal/
+
+# Environnement
+.env
+.env.local
+
+# Build (si jamais utilisé)
+dist/
+build/
+*.min.js
+*.min.css
+
+# Tests
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
+*.cache
+
+# Logs
+logs/
+*.log

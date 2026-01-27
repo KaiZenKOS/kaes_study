@@ -1,0 +1,584 @@
+/* ============================================
+   PIXEL FOCUS - STYLES
+   ============================================ */
+
+/* Pixel Art Styles */
+img,
+.pixel-art {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* Animation pour les sprites */
+@keyframes sprite-animation {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: -100%;
+  }
+}
+
+.sprite-animated {
+  animation: sprite-animation 1s steps(4) infinite;
+}
+
+/* Scrollbar hide */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Animation de pulsation pour les boutons actifs */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(225, 112, 85, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(225, 112, 85, 0);
+  }
+}
+
+.sound-btn.active {
+  animation: pulse-glow 2s infinite;
+}
+
+/* ============================================
+   MODAL SYSTEM
+   ============================================ */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(92, 84, 70, 0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--card);
+  border: 4px solid var(--foreground);
+  box-shadow: 8px 8px 0px 0px var(--muted-foreground);
+  max-width: 400px;
+  width: 90%;
+  position: relative;
+}
+
+/* ============================================
+   PIXEL CHECKBOX
+   ============================================ */
+
+.pixel-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--foreground);
+  background: var(--background);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.1s;
+}
+
+.pixel-checkbox:hover {
+  background: var(--muted);
+}
+
+.pixel-checkbox.checked {
+  background: var(--primary);
+}
+
+.pixel-checkbox.checked::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--primary-foreground);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow:
+    2px 0 0 0 var(--primary-foreground),
+    -2px 0 0 0 var(--primary-foreground),
+    0 2px 0 0 var(--primary-foreground),
+    0 -2px 0 0 var(--primary-foreground);
+}
+
+.priority-option {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.priority-option:hover {
+  transform: translateX(4px);
+}
+
+.priority-option.selected {
+  background: var(--muted);
+}
+
+/* ============================================
+   PAGES SYSTEM
+   ============================================ */
+
+.page {
+  display: none;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.page.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 5px var(--accent),
+      0 0 10px var(--accent);
+  }
+  50% {
+    box-shadow:
+      0 0 10px var(--accent),
+      0 0 20px var(--accent),
+      0 0 30px var(--accent);
+  }
+}
+
+.nav-btn.active {
+  color: var(--primary);
+}
+
+/* ============================================
+   MODE FOCUS (Dark Theme)
+   ============================================ */
+
+:root.dark-mode {
+  --background: #0a0a0a;
+  --foreground: #e5e5e5;
+  --primary: #404040;
+  --primary-foreground: #ffffff;
+  --secondary: #525252;
+  --secondary-foreground: #ffffff;
+  --accent: #737373;
+  --accent-foreground: #ffffff;
+  --muted: #1a1a1a;
+  --muted-foreground: #a3a3a3;
+  --border: #262626;
+  --card: #171717;
+  --chart-1: #404040;
+  --chart-2: #525252;
+  --chart-3: #737373;
+  --destructive: #7f1d1d;
+}
+
+:root.dark-mode .shadow-\[4px_4px_0px_0px_var\(--color-foreground\)\] {
+  box-shadow: 4px 4px 0px 0px #f5f5f5;
+}
+
+:root.dark-mode .shadow-\[3px_3px_0px_0px_var\(--color-foreground\)\] {
+  box-shadow: 3px 3px 0px 0px #f5f5f5;
+}
+
+/* ============================================
+   NOTIFICATIONS
+   ============================================ */
+
+.notification {
+  position: fixed;
+  top: 5rem;
+  right: 1.5rem;
+  z-index: 9999;
+  min-width: 280px;
+  max-width: 380px;
+  padding: 1rem 1.25rem;
+  border: 3px solid var(--foreground);
+  font-weight: bold;
+  font-size: 0.875rem;
+  box-shadow: 4px 4px 0px 0px var(--foreground);
+  animation: slideIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  background-color: var(--card);
+  color: var(--foreground);
+}
+
+.notification.hiding {
+  animation: slideOut 0.3s ease-out forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(120%) scale(0.8);
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   TOGGLES
+   ============================================ */
+
+[data-toggle] {
+  position: relative;
+  transition: background-color 0.2s;
+}
+
+[data-toggle].active {
+  background-color: var(--accent);
+}
+
+[data-toggle].active::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--foreground);
+}
+
+/* ============================================
+   GLOBAL SPACING TWEAKS
+   - Adds breathing room across pages
+   - Prevents overlap with fixed bottom navbar
+   ============================================ */
+
+:root {
+  --safe-area-bottom: 8.5rem;
+  --page-vertical-padding: 1.5rem;
+  --page-gap: 2rem;
+  --grid-gap: 1.1rem;
+  --spacing-mult: 1.12;
+}
+
+.page {
+  padding-top: var(--page-vertical-padding) !important;
+  padding-bottom: calc(
+    var(--safe-area-bottom) + var(--page-vertical-padding)
+  ) !important;
+  gap: var(--page-gap) !important;
+}
+
+/* Slightly increase spacing for card grids (but keep calendar tight) */
+.page .grid.grid-cols-2,
+.page .grid.grid-cols-3,
+.page .grid.grid-cols-4 {
+  gap: var(--grid-gap) !important;
+}
+
+@media (max-width: 420px) {
+  :root {
+    --safe-area-bottom: 9rem;
+    --page-vertical-padding: 1.25rem;
+    --page-gap: 1.75rem;
+    --grid-gap: 1rem;
+  }
+
+  .page {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}
+
+.modal-content {
+  max-height: calc(100vh - 3rem);
+  overflow: auto;
+}
+
+/* Scale common Tailwind spacing utilities (site-wide breathing room) */
+.p-4 {
+  padding: calc(1rem * var(--spacing-mult)) !important;
+}
+
+.p-6 {
+  padding: calc(1.5rem * var(--spacing-mult)) !important;
+}
+
+.px-6 {
+  padding-left: calc(1.5rem * var(--spacing-mult)) !important;
+  padding-right: calc(1.5rem * var(--spacing-mult)) !important;
+}
+
+.py-4 {
+  padding-top: calc(1rem * var(--spacing-mult)) !important;
+  padding-bottom: calc(1rem * var(--spacing-mult)) !important;
+}
+
+.gap-6 {
+  gap: calc(1.5rem * var(--spacing-mult)) !important;
+}
+
+.gap-4 {
+  gap: calc(1rem * var(--spacing-mult)) !important;
+}
+
+.gap-3 {
+  gap: calc(0.75rem * var(--spacing-mult)) !important;
+}
+
+.gap-2 {
+  gap: calc(0.5rem * var(--spacing-mult)) !important;
+}
+
+.space-y-4 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: calc(1rem * var(--spacing-mult)) !important;
+}
+
+.space-y-3 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: calc(0.75rem * var(--spacing-mult)) !important;
+}
+
+/* ============================================
+   DESKTOP / WEB LAYOUT
+   - Keep mobile-first, but make the UI feel like a real web app on larger screens
+   ============================================ */
+
+@media (min-width: 900px) {
+  :root {
+    --safe-area-bottom: 2rem;
+    --page-vertical-padding: 2rem;
+    --page-gap: 2.25rem;
+    --grid-gap: 1.25rem;
+
+    --desktop-max: 1120px;
+    --sidebar-w: 108px;
+  }
+
+  /* App shell: reserve space for a left sidebar nav */
+  body > div.min-h-screen {
+    padding-bottom: 2rem !important;
+    padding-left: calc(var(--sidebar-w) + 1.5rem) !important;
+    align-items: stretch !important;
+  }
+
+  body > div.min-h-screen > header {
+    width: 100% !important;
+    max-width: var(--desktop-max) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  /* Pages become wider on desktop */
+  .page {
+    width: 100% !important;
+    max-width: var(--desktop-max) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  /* Bottom navbar becomes a left sidebar */
+  body
+    > div.min-h-screen
+    > div[class*="fixed"][class*="bottom-0"][class*="left-0"][class*="right-0"] {
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: auto !important;
+    width: var(--sidebar-w) !important;
+    height: 100vh !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    gap: 1.25rem !important;
+    padding: 1.25rem 0.75rem !important;
+
+    border-top: 0 !important;
+    border-right: 4px solid var(--foreground) !important;
+  }
+
+  body
+    > div.min-h-screen
+    > div[class*="fixed"][class*="bottom-0"][class*="left-0"][class*="right-0"]
+    .nav-btn {
+    width: 100% !important;
+  }
+
+  /* Sidebar nav colors (grey/white) */
+  body
+    > div.min-h-screen
+    > div[class*="fixed"][class*="bottom-0"][class*="left-0"][class*="right-0"]
+    .nav-btn {
+    color: var(--muted-foreground) !important;
+    transition:
+      color 160ms ease,
+      opacity 160ms ease,
+      transform 160ms ease;
+  }
+
+  body
+    > div.min-h-screen
+    > div[class*="fixed"][class*="bottom-0"][class*="left-0"][class*="right-0"]
+    .nav-btn.active {
+    color: var(--foreground) !important;
+  }
+
+  body
+    > div.min-h-screen
+    > div[class*="fixed"][class*="bottom-0"][class*="left-0"][class*="right-0"]
+    .nav-btn:not(.active):hover {
+    color: var(--muted-foreground) !important;
+    opacity: 0.75;
+  }
+
+  body
+    > div.min-h-screen
+    > div[class*="fixed"][class*="bottom-0"][class*="left-0"][class*="right-0"]
+    .nav-btn:not(.active):active {
+    opacity: 0.65;
+    transform: translateY(1px);
+  }
+
+  /* De-float the big + button inside the sidebar */
+  body
+    > div.min-h-screen
+    > div[class*="fixed"][class*="bottom-0"][class*="left-0"][class*="right-0"]
+    [class*="-top-8"] {
+    top: 0 !important;
+  }
+
+  body
+    > div.min-h-screen
+    > div[class*="fixed"][class*="bottom-0"][class*="left-0"][class*="right-0"]
+    #quickAddBtn {
+    width: 3.25rem !important;
+    height: 3.25rem !important;
+    border-radius: 0.25rem !important;
+  }
+
+  /* Wider modals on desktop */
+  .modal-content {
+    max-width: 560px;
+  }
+
+  /* ---------- Per-page desktop layouts ---------- */
+
+  /* Focus: timer on the left, quest log on the right */
+  #pageFocus.page.active {
+    display: grid !important;
+    grid-template-columns: 1.35fr 0.65fr;
+    align-items: start;
+  }
+
+  #pageFocus.page.active > :nth-child(1) {
+    grid-column: 1 / -1;
+  }
+
+  #pageFocus.page.active > :nth-child(2),
+  #pageFocus.page.active > :nth-child(3) {
+    grid-column: 1;
+  }
+
+  #pageFocus.page.active > :nth-child(4) {
+    grid-column: 2;
+    grid-row: 2 / 4;
+    align-self: start;
+  }
+
+  /* Stats: make the cards row fit desktop width */
+  #pageStats .grid.grid-cols-2 {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  /* Planning: calendar left, week + goals right */
+  #pagePlan.page.active {
+    display: grid !important;
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: start;
+  }
+
+  #pagePlan.page.active > :nth-child(1) {
+    grid-column: 1 / -1;
+  }
+
+  #pagePlan.page.active > :nth-child(2) {
+    grid-column: 1;
+  }
+
+  #pagePlan.page.active > :nth-child(3),
+  #pagePlan.page.active > :nth-child(4) {
+    grid-column: 2;
+  }
+
+  /* Profile: profile card left, settings right, actions full width */
+  #pageProfile.page.active {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+
+  #pageProfile.page.active > :nth-child(1) {
+    grid-column: 1 / -1;
+  }
+
+  #pageProfile.page.active > :nth-child(2) {
+    grid-column: 1;
+  }
+
+  #pageProfile.page.active > :nth-child(3) {
+    grid-column: 2;
+  }
+
+  #pageProfile.page.active > :nth-child(4) {
+    grid-column: 1 / -1;
+  }
+}
