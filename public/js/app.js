@@ -146,11 +146,13 @@ function toggleTimer() {
 
   if (isRunning) {
     // STOP
+    playActionSound("timerStop");
     clearTimerInterval();
     isRunning = false;
     setStartButtonRunning(false);
   } else {
     // START
+    playActionSound("timerStart");
     isRunning = true;
     setStartButtonRunning(true);
 

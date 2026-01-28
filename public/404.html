@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>404 - Page Not Found | Kae's Study</title>
+
+    <link
+      rel="icon"
+      type="image/png"
+      href="assets/icon/kaes_website_icon.png"
+    />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind + Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+
+    <style type="text/tailwindcss">
+      :root {
+        --background: #fdf6e3;
+        --foreground: #5c5446;
+        --primary: #e17055;
+        --muted: #eee4cc;
+        --border: #dcd0b3;
+      }
+
+      @keyframes glitch {
+        0% {
+          transform: translate(0);
+        }
+        20% {
+          transform: translate(-2px, 2px);
+        }
+        40% {
+          transform: translate(-2px, -2px);
+        }
+        60% {
+          transform: translate(2px, 2px);
+        }
+        80% {
+          transform: translate(2px, -2px);
+        }
+        100% {
+          transform: translate(0);
+        }
+      }
+      .glitch {
+        animation: glitch 0.3s ease-in-out;
+      }
+    </style>
+  </head>
+
+  <body
+    class="bg-[var(--background)] text-[var(--foreground)] font-['Space_Grotesk']"
+  >
+    <!-- 🌤️ DECOR (statique, n'affecte PAS le centrage) -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden">
+      <iconify-icon
+        icon="solar:cloud-bold"
+        class="absolute top-10 left-0 size-24 text-teal-300 opacity-40"
+      ></iconify-icon>
+
+      <iconify-icon
+        icon="solar:cloud-bold"
+        class="absolute top-24 right-0 size-16 text-orange-300 opacity-30"
+      ></iconify-icon>
+    </div>
+
+    <!-- 🎯 CONTENU CENTRÉ -->
+    <main class="min-h-screen grid place-items-center px-4">
+      <section class="w-full max-w-[42rem] flex flex-col items-center gap-8">
+        <!-- Logo -->
+        <a href="/" class="flex items-center gap-3">
+          <div
+            class="size-12 bg-[var(--primary)] border-4 border-[var(--foreground)] flex items-center justify-center"
+          >
+            <iconify-icon
+              icon="solar:gamepad-bold"
+              class="size-6 text-white"
+            ></iconify-icon>
+          </div>
+          <h1 class="text-2xl font-bold">Kae's Study</h1>
+        </a>
+
+        <!-- Card -->
+        <div
+          class="w-full bg-white border-4 border-[var(--foreground)] p-8 sm:p-10 text-center shadow-[8px_8px_0_0_var(--border)]"
+        >
+          <!-- Icon -->
+          <div
+            class="mx-auto mb-6 size-24 bg-red-400 border-4 border-[var(--foreground)] flex items-center justify-center"
+          >
+            <iconify-icon
+              icon="solar:ghost-bold"
+              class="size-12 text-white"
+            ></iconify-icon>
+          </div>
+
+          <!-- 404 -->
+          <h2 class="text-[clamp(3.5rem,12vw,6rem)] font-black glitch">404</h2>
+          <p class="font-bold text-lg opacity-70">PAGE NOT FOUND</p>
+
+          <!-- Message -->
+          <div
+            class="mt-6 bg-[var(--muted)] p-4 border-2 border-[var(--border)]"
+          >
+            Oops! This page decided to skip class. It seems we couldn't find
+            what you're looking for.
+          </div>
+
+          <!-- Actions -->
+          <div class="mt-8 flex flex-col sm:flex-row gap-4">
+            <a
+              href="/"
+              class="flex-1 bg-[var(--primary)] text-white font-bold py-3 border-b-4 border-r-4 border-rose-800 active:border-b-0 active:border-r-0 active:translate-y-1 transition-all"
+            >
+              GO HOME
+            </a>
+            <button
+              onclick="window.history.back()"
+              class="flex-1 bg-[var(--muted)] font-bold py-3 border-b-4 border-r-4 border-stone-400 active:border-b-0 active:border-r-0 active:translate-y-1 transition-all"
+            >
+              GO BACK
+            </button>
+          </div>
+        </div>
+
+        <!-- Footer -->
+      </section>
+    </main>
+
+    <script>
+      setInterval(() => {
+        const el = document.querySelector(".glitch");
+        if (!el) return;
+        el.classList.remove("glitch");
+        void el.offsetWidth;
+        el.classList.add("glitch");
+      }, 3000);
+    </script>
+  </body>
+</html>

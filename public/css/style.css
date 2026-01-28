@@ -516,9 +516,9 @@ img,
 
   /* Focus: timer on the left, quest log on the right */
   #pageFocus.page.active {
-    display: grid !important;
-    grid-template-columns: 1.35fr 0.65fr;
-    align-items: start;
+    display: flex !important;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   #pageFocus.page.active > :nth-child(1) {

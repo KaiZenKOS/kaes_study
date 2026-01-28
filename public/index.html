@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Kae's Study</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="assets/icon/kaes_website_icon.png"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -372,7 +377,7 @@
             class="size-10 bg-card border-2 border-border shadow-[2px_2px_0px_0px_var(--color-border)] flex items-center justify-center hover:translate-y-[2px] hover:shadow-none transition-all active:translate-y-[2px]"
           >
             <iconify-icon
-              icon="solar:settings-bold"
+              icon="solar:info-circle-bold"
               class="size-5 text-muted-foreground"
             ></iconify-icon>
           </button>
@@ -433,25 +438,26 @@
               ></iconify-icon>
               INVITE FRIENDS
             </button>
-            <div
-              id="roomParticipants"
-              class="hidden flex items-center gap-2"
-            ></div>
-          </div>
-          <div class="flex justify-center gap-4 mb-8">
-            <button
-              class="px-3 py-1 bg-secondary text-secondary-foreground text-xs font-bold border-2 border-secondary-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]"
-            >
-              POMODORO</button
-            ><button
-              class="px-3 py-1 bg-transparent text-muted-foreground text-xs font-bold border-2 border-transparent hover:border-border"
-            >
-              SHORT BREAK</button
-            ><button
-              class="px-3 py-1 bg-transparent text-muted-foreground text-xs font-bold border-2 border-transparent hover:border-border"
-            >
-              LONG BREAK
-            </button>
+            <div class="flex justify-center gap-4 mb-8">
+              <button
+                class="px-3 py-1 bg-secondary text-secondary-foreground text-xs font-bold border-2 border-secondary-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]"
+                type="button"
+              >
+                POMODORO
+              </button>
+              <button
+                class="px-3 py-1 bg-transparent text-muted-foreground text-xs font-bold border-2 border-transparent hover:border-border"
+                type="button"
+              >
+                SHORT BREAK
+              </button>
+              <button
+                class="px-3 py-1 bg-transparent text-muted-foreground text-xs font-bold border-2 border-transparent hover:border-border"
+                type="button"
+              >
+                LONG BREAK
+              </button>
+            </div>
           </div>
           <div class="flex flex-col items-center gap-4">
             <div
@@ -596,8 +602,8 @@
             ></iconify-icon>
           </div>
           <div>
-            <h2 class="text-2xl font-bold">STATISTIQUES</h2>
-            <p class="text-sm text-muted-foreground">Tes performances</p>
+            <h2 class="text-2xl font-bold">STATISTICS</h2>
+            <p class="text-sm text-muted-foreground">Your performance</p>
           </div>
         </div>
 
@@ -1203,8 +1209,10 @@
           <iconify-icon icon="solar:calendar-bold" class="size-6"></iconify-icon
           ><span class="text-[10px] font-bold uppercase tracking-wide"
             >Plan</span
-          ></button
-        ><button
+          >
+        </button>
+
+        <button
           class="nav-btn flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground"
           data-page="profile"
         >

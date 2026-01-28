@@ -1,100 +1,22 @@
 // ============================================
-// AMBIANCE SONORE (AUDIO MANAGER) - DÉSACTIVÉ
+// SONS ACTIONS (NOTIFICATIONS & TIMER)
 // ============================================
 
-/*
-const audioManager = {
-  sounds: {
-    rain: null,
-    fire: null,
-    cafe: null,
-    wind: null,
-    night: null,
-  },
-  activeSounds: new Set(),
-
-  init() {
-    // Créer des objets Audio pour chaque son
-    this.sounds.rain = new Audio("assets/sounds/rain.mp3");
-    this.sounds.fire = new Audio("assets/sounds/fire.mp3");
-    this.sounds.cafe = new Audio("assets/sounds/cafe.mp3");
-    this.sounds.wind = new Audio("assets/sounds/wind.mp3");
-    this.sounds.night = new Audio("assets/sounds/night.mp3");
-
-    // Configurer tous les sons en loop
-    Object.values(this.sounds).forEach((audio) => {
-      if (audio) {
-        audio.loop = true;
-        audio.volume = 0.5;
-      }
-    });
-
-    // Charger l'état sauvegardé
-    this.loadState();
-  },
-
-  toggle(soundName) {
-    const audio = this.sounds[soundName];
-    if (!audio) return;
-
-    if (this.activeSounds.has(soundName)) {
-      // Désactiver le son
-      audio.pause();
-      audio.currentTime = 0;
-      this.activeSounds.delete(soundName);
-      this.updateButtonState(soundName, false);
-    } else {
-      // Activer le son
-      audio.play().catch((err) => {
-        console.warn(`Impossible de jouer ${soundName}:`, err);
-      });
-      this.activeSounds.add(soundName);
-      this.updateButtonState(soundName, true);
-    }
-
-    this.saveState();
-  },
-
-  updateButtonState(soundName, active) {
-    const button = document.querySelector(`[data-sound="${soundName}"]`);
-    if (!button) return;
-
-    if (active) {
-      button.classList.add("bg-secondary");
-      button.classList.remove("bg-card");
-    } else {
-      button.classList.remove("bg-secondary");
-      button.classList.add("bg-card");
-    }
-  },
-
-  saveState() {
-    localStorage.setItem(
-      "activeSounds",
-      JSON.stringify([...this.activeSounds]),
-    );
-  },
-
-  loadState() {
-    const saved = localStorage.getItem("activeSounds");
-    if (saved) {
-      const activeSounds = JSON.parse(saved);
-      activeSounds.forEach((soundName) => {
-        // Ne pas auto-play au chargement pour éviter les erreurs de navigateur
-        this.updateButtonState(soundName, true);
-      });
-    }
-  },
+const actionSounds = {
+  notification: new Audio("assets/sounds/notification.mp3"),
+  timerStart: new Audio("assets/sounds/timer_start.mp3"),
+  timerStop: new Audio("assets/sounds/timer_stop.mp3"),
 };
 
-// Event Listeners pour les boutons de son
-document.querySelectorAll(".sound-btn").forEach((btn) => {
-  btn.addEventListener("click", (e) => {
-    const soundName = e.currentTarget.getAttribute("data-sound");
-    audioManager.toggle(soundName);
-  });
-});
-*/
+function playActionSound(type) {
+  const sound = actionSounds[type];
+  if (sound) {
+    sound.currentTime = 0;
+    sound.play().catch((err) => {
+      console.warn(`Impossible de jouer le son ${type}:`, err);
+    });
+  }
+}
 
 // ============================================
 // CITATIONS DYNAMIQUES (QUOTES)
@@ -150,6 +72,28 @@ const quotesManager = {
 // ============================================
 
 function showNotification(message, type = "info") {
+  playActionSound("notification");
+
+  // Notification système native (si autorisée)
+  if (window.Notification) {
+    if (Notification.permission === "granted") {
+      new Notification("Kae's Study", {
+        body: message,
+        icon: "assets/icon/kaes_website_icon.png",
+      });
+    } else if (Notification.permission !== "denied") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          new Notification("Kae's Study", {
+            body: message,
+            icon: "assets/icon/kaes_website_icon.png",
+          });
+        }
+      });
+    }
+  }
+
+  // Notification visuelle dans la page
   const notification = document.createElement("div");
   notification.className = "notification";
   notification.textContent = message;
@@ -180,7 +124,14 @@ const profileManager = {
   },
 
   getRandomDefaultAvatar() {
-    const options = ["pfps/1.jpg", "pfps/2.jpg", "pfps/3.jpg", "pfps/4.jpg","pfps/5.jpg","pfps/6.jpg"];
+    const options = [
+      "pfps/1.jpg",
+      "pfps/2.jpg",
+      "pfps/3.jpg",
+      "pfps/4.jpg",
+      "pfps/5.jpg",
+      "pfps/6.jpg",
+    ];
     const index = Math.floor(Math.random() * options.length);
     return options[index];
   },
