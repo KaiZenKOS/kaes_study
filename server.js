@@ -1,7 +1,8 @@
 const path = require("path");
 const http = require("http");
 const crypto = require("crypto");
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+const fetch = (...args) =>
+  import("node-fetch").then(({ default: fetch }) => fetch(...args));
 const express = require("express");
 const { Server } = require("socket.io");
 
@@ -56,7 +57,7 @@ function getOrCreateRoom(roomId) {
 }
 app.get("/api/quote", async (req, res) => {
   try {
-    const response = await fetch('https://zenquotes.io/api/random');
+    const response = await fetch("https://zenquotes.io/api/random");
     const data = await response.json();
     res.json(data);
   } catch (error) {
@@ -317,6 +318,11 @@ io.on("connection", (socket) => {
       rooms.delete(roomId);
     }
   });
+});
+
+// Middleware 404 : sert la page 404.html pour toute route non trouvée
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(PUBLIC_DIR, "404.html"));
 });
 
 httpServer.listen(PORT, () => {
