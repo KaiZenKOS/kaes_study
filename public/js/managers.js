@@ -117,7 +117,7 @@ const quotesManager = {
   async fetchQuote() {
     try {
       // Essayer l'API ZenQuotes
-      const response = await fetch("https://zenquotes.io/api/random");
+      const response = await fetch("/api/quote");
       const data = await response.json();
 
       if (data && data[0]) {
@@ -180,7 +180,7 @@ const profileManager = {
   },
 
   getRandomDefaultAvatar() {
-    const options = ["pfps/1.jpg", "pfps/2.jpg", "pfps/3.jpg"];
+    const options = ["pfps/1.jpg", "pfps/2.jpg", "pfps/3.jpg", "pfps/4.jpg","pfps/5.jpg","pfps/6.jpg"];
     const index = Math.floor(Math.random() * options.length);
     return options[index];
   },

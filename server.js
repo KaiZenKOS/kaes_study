@@ -1,7 +1,7 @@
 const path = require("path");
 const http = require("http");
 const crypto = require("crypto");
-
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const express = require("express");
 const { Server } = require("socket.io");
 
@@ -54,7 +54,15 @@ function getOrCreateRoom(roomId) {
   }
   return room;
 }
-
+app.get("/api/quote", async (req, res) => {
+  try {
+    const response = await fetch('https://zenquotes.io/api/random');
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: "Impossible de récupérer la citation" });
+  }
+});
 function roomParticipantsPayload(room) {
   return Array.from(room.participants.values()).map((p) => ({
     id: p.id,
