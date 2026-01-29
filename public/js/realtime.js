@@ -72,6 +72,7 @@
       return;
     }
 
+    container.classList.remove("hidden");
     container.classList.add("flex");
 
     (participants || []).slice(0, 8).forEach((p) => {
