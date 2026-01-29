@@ -33,6 +33,8 @@ function updateTimerModes() {
 let currentMode = "POMODORO";
 let timeRemaining = TIMER_MODES.POMODORO.duration;
 let timerInterval = null;
+let timerStartTimestamp = null; // timestamp de départ du timer local
+let timerInitialDuration = null; // durée initiale du timer local
 let isRunning = false;
 let isSyncEnabled = false;
 let syncedEndTimeMs = null;
@@ -61,7 +63,30 @@ function formatTime(seconds) {
 // Mettre à jour l'affichage du timer
 function updateDisplay() {
   timerDisplay.textContent = formatTime(timeRemaining);
+  // Afficher le temps restant dans le titre de l'onglet
+  let modeLabel = TIMER_MODES[currentMode]?.label || "";
+  document.title = `${formatTime(timeRemaining)}${modeLabel ? " - " + modeLabel : ""} | Kae's Blog`;
 }
+
+// Correction du freeze d'affichage du timer lors du retour sur l'onglet
+document.addEventListener("visibilitychange", function () {
+  if (!isRunning) return;
+  // Timer local
+  if (!isSyncEnabled && timerStartTimestamp && timerInitialDuration != null) {
+    const elapsed = Math.floor((Date.now() - timerStartTimestamp) / 1000);
+    timeRemaining = Math.max(0, timerInitialDuration - elapsed);
+    updateDisplay();
+  }
+  // Timer synchronisé (mode room)
+  if (isSyncEnabled && syncedEndTimeMs) {
+    const remaining = Math.max(
+      0,
+      Math.ceil((syncedEndTimeMs - Date.now()) / 1000),
+    );
+    timeRemaining = remaining;
+    updateDisplay();
+  }
+});
 
 function clearTimerInterval() {
   if (timerInterval) {
@@ -150,28 +175,34 @@ function toggleTimer() {
     clearTimerInterval();
     isRunning = false;
     setStartButtonRunning(false);
+    timerStartTimestamp = null;
+    timerInitialDuration = null;
   } else {
     // START
     playActionSound("timerStart");
     isRunning = true;
     setStartButtonRunning(true);
+    timerStartTimestamp = Date.now();
+    timerInitialDuration = timeRemaining;
 
     timerInterval = setInterval(() => {
-      if (timeRemaining > 0) {
-        timeRemaining--;
-        updateDisplay();
+      const elapsed = Math.floor((Date.now() - timerStartTimestamp) / 1000);
+      timeRemaining = Math.max(0, timerInitialDuration - elapsed);
+      updateDisplay();
 
-        // Incrémenter le temps de focus seulement en mode POMODORO
-        if (currentMode === "POMODORO") {
-          totalFocusTime++;
-          updateXP();
-          saveFocusTime();
-        }
-      } else {
-        // Timer terminé
+      // Incrémenter le temps de focus seulement en mode POMODORO
+      if (currentMode === "POMODORO" && timeRemaining > 0) {
+        totalFocusTime++;
+        updateXP();
+        saveFocusTime();
+      }
+
+      if (timeRemaining <= 0) {
         clearTimerInterval();
         isRunning = false;
         setStartButtonRunning(false);
+        timerStartTimestamp = null;
+        timerInitialDuration = null;
 
         // Passer automatiquement au mode suivant
         autoSwitchMode();
@@ -204,6 +235,8 @@ function restartTimer() {
   clearTimerInterval();
   isRunning = false;
   timeRemaining = TIMER_MODES[currentMode].duration;
+  timerStartTimestamp = null;
+  timerInitialDuration = null;
   updateDisplay();
   setStartButtonRunning(false);
 }
