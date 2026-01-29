@@ -72,8 +72,6 @@ const quotesManager = {
 // ============================================
 
 function showNotification(message, type = "info") {
-  playActionSound("notification");
-
   // Notification système native (si autorisée)
   if (window.Notification) {
     if (Notification.permission === "granted") {

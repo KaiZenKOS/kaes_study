@@ -371,10 +371,10 @@
             </h1>
           </div>
         </div>
-        <div class="flex gap-3">
+        <div class="flex gap-2 sm:gap-3 items-center">
           <button
             id="settingsBtn"
-            class="size-10 bg-card border-2 border-border shadow-[2px_2px_0px_0px_var(--color-border)] flex items-center justify-center hover:translate-y-[2px] hover:shadow-none transition-all active:translate-y-[2px]"
+            class="size-10 min-w-10 min-h-10 bg-card border-2 border-border shadow-[2px_2px_0px_0px_var(--color-border)] flex items-center justify-center rounded-full hover:translate-y-[2px] hover:shadow-none transition-all active:translate-y-[2px] focus:outline-none"
           >
             <iconify-icon
               icon="solar:info-circle-bold"
@@ -383,13 +383,13 @@
           </button>
           <button
             id="profileBtn"
-            class="size-10 bg-secondary border-2 border-foreground overflow-hidden cursor-pointer hover:scale-105 transition-transform"
+            class="size-10 min-w-10 min-h-10 bg-secondary border-2 border-foreground overflow-hidden cursor-pointer rounded-full hover:scale-105 transition-transform focus:outline-none"
           >
             <img
               id="profileImage"
               src=""
               alt="Profile"
-              class="w-full h-full object-cover"
+              class="w-full h-full object-cover block"
               style="display: none"
             />
           </button>
@@ -489,7 +489,9 @@
             </div>
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-4">
+        <!-- Déplacé plus bas -->
+        <!-- Grille XP et citation déplacée ici, sous le bloc Quest Log -->
+        <div class="grid grid-cols-2 gap-4 mt-6">
           <div
             class="bg-card border-2 border-foreground p-4 shadow-[4px_4px_0px_0px_var(--color-accent)]"
           >
@@ -531,7 +533,7 @@
               >Quest Log
             </h3>
             <button
-              class="size-8 bg-accent text-accent-foreground border-2 border-foreground flex items-center justify-center shadow-[2px_2px_0px_0px_var(--color-foreground)] active:translate-y-[2px] active:shadow-none"
+              class="size-8 bg-accent text-accent-foreground border-2 border-foreground flex items-center justify-center shadow-[2px_2px_0px_0px_var(--color-foreground)] active:translate-y-[2px] active:shadow-none add-quest-btn-desktop"
             >
               <iconify-icon
                 icon="material-symbols:add-rounded"
@@ -742,9 +744,10 @@
           </div>
         </div>
 
-        <!-- Achievements -->
+        <!-- Bloc badges déplacé plus bas -->
+        <!-- Bloc badges déplacé ici, après les autres sections -->
         <div
-          class="bg-card border-2 border-foreground p-4 shadow-[4px_4px_0px_0px_var(--color-chart-3)]"
+          class="bg-card border-2 border-foreground p-4 shadow-[4px_4px_0px_0px_var(--color-chart-3)] mt-6"
         >
           <h3
             class="text-sm font-bold uppercase tracking-wide text-muted-foreground mb-3 flex items-center gap-2"

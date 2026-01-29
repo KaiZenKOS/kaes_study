@@ -1,3 +1,42 @@
+@media (min-width: 921px) {
+  .add-quest-btn-desktop {
+    margin-left: 0.5rem;
+  }
+}
+@media (max-width: 920px) {
+  .bg-card.border-4.p-6.shadow-\[8px_8px_0px_0px_var\(--color-muted-foreground\)\].relative.mt-2 {
+    max-width: 100vw !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+
+  .flex.items-center.justify-between.gap-3.mb-5,
+  .flex.flex-col.items-center.gap-4 {
+    flex-wrap: wrap;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .text-7xl {
+    font-size: 2.5rem !important;
+    word-break: break-word;
+  }
+
+  .flex.gap-4.mt-4.w-full {
+    flex-direction: column;
+    gap: 0.5rem !important;
+  }
+
+  .size-14,
+  .h-14 {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+  }
+}
 /* ============================================
    PIXEL FOCUS - STYLES
    ============================================ */
@@ -340,6 +379,43 @@ img,
   .page {
     padding-left: 1.25rem;
     padding-right: 1.25rem;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
+  .bg-card {
+    max-width: 100vw !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+
+  .flex.items-center.justify-between.gap-3.mb-5,
+  .flex.flex-col.items-center.gap-4 {
+    flex-wrap: wrap;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .text-7xl {
+    font-size: 2.5rem !important;
+    word-break: break-word;
+  }
+
+  .flex.gap-4.mt-4.w-full {
+    flex-direction: column;
+    gap: 0.5rem !important;
+  }
+
+  .size-14,
+  .h-14 {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
   }
 }
 
