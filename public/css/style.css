@@ -240,22 +240,27 @@ img,
    ============================================ */
 
 :root.dark-mode {
-  --background: #0a0a0a;
-  --foreground: #e5e5e5;
-  --primary: #404040;
+  --background: #181825;
+  --foreground: #f5f5fa;
+  --primary: #4f5b93;
   --primary-foreground: #ffffff;
-  --secondary: #525252;
-  --secondary-foreground: #ffffff;
-  --accent: #737373;
-  --accent-foreground: #ffffff;
-  --muted: #1a1a1a;
-  --muted-foreground: #a3a3a3;
-  --border: #262626;
-  --card: #171717;
-  --chart-1: #404040;
-  --chart-2: #525252;
-  --chart-3: #737373;
-  --destructive: #7f1d1d;
+  --secondary: #7c6fa3;
+  --secondary-foreground: #f5f5fa;
+  --accent: #5fcbb0;
+  --accent-foreground: #181825;
+  --muted: #23233a;
+  --muted-foreground: #b8b8d0;
+  --border: #35355a;
+  --card: #23233a;
+  --chart-1: #6b8bbd;
+  --chart-2: #5fcbb0;
+  --chart-3: #e6a96b;
+  --destructive: #e17055;
+  /* Pastels planning dark */
+  --pastel-blue: #6b8bbd;
+  --pastel-green: #5fcbb0;
+  --pastel-orange: #e6a96b;
+  --pastel-purple: #a98ed6;
 }
 
 :root.dark-mode .shadow-\[4px_4px_0px_0px_var\(--color-foreground\)\] {
@@ -351,6 +356,58 @@ img,
   --page-gap: 2rem;
   --grid-gap: 1.1rem;
   --spacing-mult: 1.12;
+  /* Couleurs pastel pour le planning */
+  --pastel-blue: #a7c7e7;
+  --pastel-green: #b8e0d2;
+  --pastel-orange: #f7c8a0;
+  --pastel-purple: #d7b4f3;
+}
+
+/* Correction couleurs planning (light) */
+.color-option[data-color="primary"] .size-4 {
+  background: var(--pastel-blue) !important;
+}
+.color-option[data-color="chart-2"] .size-4 {
+  background: var(--pastel-green) !important;
+}
+.color-option[data-color="chart-3"] .size-4 {
+  background: var(--pastel-orange) !important;
+}
+.color-option[data-color="secondary"] .size-4 {
+  background: var(--pastel-purple) !important;
+}
+
+:root.dark-mode .color-option[data-color="primary"] .size-4 {
+  background: var(--pastel-blue) !important;
+}
+:root.dark-mode .color-option[data-color="chart-2"] .size-4 {
+  background: var(--pastel-green) !important;
+}
+:root.dark-mode .color-option[data-color="chart-3"] .size-4 {
+  background: var(--pastel-orange) !important;
+}
+:root.dark-mode .color-option[data-color="secondary"] .size-4 {
+  background: var(--pastel-purple) !important;
+}
+
+/* Lisibilité générale : texte foncé sur fond clair, texte clair sur fond foncé */
+body,
+.text-foreground {
+  color: var(--foreground);
+}
+:root.dark-mode body,
+:root.dark-mode .text-foreground {
+  color: var(--foreground);
+}
+.bg-card,
+.modal-content {
+  background: var(--card);
+  color: var(--foreground);
+}
+:root.dark-mode .bg-card,
+:root.dark-mode .modal-content {
+  background: var(--card);
+  color: var(--foreground);
 }
 
 .page {
