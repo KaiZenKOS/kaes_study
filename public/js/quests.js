@@ -179,15 +179,35 @@ function renderQuests() {
     });
   });
 
+  // Gestion modale de confirmation personnalisée
+  const confirmModal = document.getElementById("confirmDeleteModal");
+  const confirmBtn = document.getElementById("confirmDeleteBtn");
+  const cancelBtn = document.getElementById("cancelDeleteBtn");
+  let pendingDeleteId = null;
+
   document.querySelectorAll('[data-action="delete"]').forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
-      const id = parseInt(e.currentTarget.getAttribute("data-id"));
-      if (confirm("Delete this task?")) {
-        deleteQuest(id);
-      }
+      pendingDeleteId = parseInt(e.currentTarget.getAttribute("data-id"));
+      confirmModal.classList.add("active");
     });
   });
+
+  if (cancelBtn) {
+    cancelBtn.onclick = () => {
+      confirmModal.classList.remove("active");
+      pendingDeleteId = null;
+    };
+  }
+  if (confirmBtn) {
+    confirmBtn.onclick = () => {
+      if (pendingDeleteId != null) {
+        deleteQuest(pendingDeleteId);
+      }
+      confirmModal.classList.remove("active");
+      pendingDeleteId = null;
+    };
+  }
 }
 
 // ============================================
