@@ -139,6 +139,9 @@ function startSyncedInterval() {
       lastSyncedFocusSecond = null;
       setStartButtonRunning(false);
       showNotification("Session complete!", "success");
+      if (typeof statsManager !== "undefined") {
+        statsManager.recordSession();
+      }
     }
   }, 250);
 }
@@ -209,6 +212,9 @@ function toggleTimer() {
 
         // Notification
         showNotification("Session complete!", "success");
+        if (typeof statsManager !== "undefined") {
+          statsManager.recordSession();
+        }
       }
     }, 1000);
   }
@@ -399,12 +405,25 @@ function updateXP() {
   const xpDisplay = document.querySelector(
     ".text-3xl.font-black.text-foreground",
   );
-  xpDisplay.textContent = hours;
+  if (xpDisplay) xpDisplay.textContent = hours;
 
   // Mettre à jour la barre de progression (objectif: 8h)
   const percentage = Math.min((totalFocusTime / (8 * 3600)) * 100, 100);
   const progressBar = document.querySelector(".bg-accent.h-full");
-  progressBar.style.width = `${percentage}%`;
+  if (progressBar) progressBar.style.width = `${percentage}%`;
+
+  // Mettre à jour le profil utilisateur (niveau, focus)
+  if (typeof profileManager !== "undefined") {
+    const profile = profileManager.loadProfile();
+    // Calcul du niveau : 1 niveau tous les 5h de focus
+    const level = 1 + Math.floor(totalFocusTime / (5 * 3600));
+    profile.level = level;
+    profileManager.saveProfile(profile);
+  }
+  // Mettre à jour les statistiques globales
+  if (typeof statsManager !== "undefined") {
+    statsManager.updateStatsDisplay();
+  }
 }
 
 // Sauvegarder le temps de focus dans localStorage

@@ -113,6 +113,17 @@ function toggleQuest(id) {
     quest.completed = !quest.completed;
     saveQuests();
     renderQuests();
+    // Mettre à jour le profil (tâches complétées)
+    if (typeof profileManager !== "undefined") {
+      const profile = profileManager.loadProfile();
+      const completedTasks = quests.filter((q) => q.completed).length;
+      profile.tasks = completedTasks;
+      profileManager.saveProfile(profile);
+    }
+    // Mettre à jour les statistiques globales
+    if (typeof statsManager !== "undefined") {
+      statsManager.updateStatsDisplay();
+    }
   }
 }
 
@@ -121,6 +132,17 @@ function deleteQuest(id) {
   quests = quests.filter((q) => q.id !== id);
   saveQuests();
   renderQuests();
+  // Mettre à jour le profil (tâches complétées)
+  if (typeof profileManager !== "undefined") {
+    const profile = profileManager.loadProfile();
+    const completedTasks = quests.filter((q) => q.completed).length;
+    profile.tasks = completedTasks;
+    profileManager.saveProfile(profile);
+  }
+  // Mettre à jour les statistiques globales
+  if (typeof statsManager !== "undefined") {
+    statsManager.updateStatsDisplay();
+  }
 }
 
 // Obtenir la couleur de priorité
